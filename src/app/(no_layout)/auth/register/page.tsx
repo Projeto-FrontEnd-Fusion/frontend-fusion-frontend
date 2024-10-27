@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import { useFormik } from "formik";
 
 import { api } from '@/utils';
-
 import { TextField, FormContainer, CustomButton, FormDiv } from '@/components/Forms';
 import { RegisterProps } from '@/types/auth';
 
@@ -18,16 +17,30 @@ export default function RegisterPage() {
       username: "",
       email: "",
       fullName: "",
-      dateOfBirth: new Date().toLocaleDateString(),
+      password: "",
+      confirmPassword: "",
+      // dateOfBirth: new Date().toLocaleDateString(),
     },
     validationSchema: Yup.object().shape({
       username: Yup.string().required('Por favor insira um nome de usuário'),
       email: Yup.string().required('Por favor insira um email válido.'),
       fullName: Yup.string().required('Por favor insira seu nome completo.'),
-      dateOfBirth: Yup.string().default(() => new Date().toLocaleDateString())
+      password: Yup
+        .string()
+        .min(8, 'Password must be 8 characters long')
+        .matches(/[0-9]/, 'Password requires a number')
+        .matches(/[a-z]/, 'Password requires a lowercase letter')
+        .matches(/[A-Z]/, 'Password requires an uppercase letter')
+        .matches(/[^\w]/, 'Password requires a symbol'),
+      confirmPassword: Yup
+        .string()
+        .oneOf([Yup.ref('password')], 'Must match "password" field value'),
+      // dateOfBirth: Yup.string().default(() => new Date().toLocaleDateString())
+      // 
     }),
     onSubmit: async (values) => {
-      await api.post('user', values)
+      console.log(values)
+      await api.post('/auth/register', values)
     }
   })
 
@@ -60,7 +73,7 @@ export default function RegisterPage() {
                 error={!!errors.email}
                 helperText={errors.email}
               />
-              <TextField 
+              <TextField
                 type='text'
                 label='Nome Completo'
                 placeholder='jhondoe53'
@@ -69,13 +82,29 @@ export default function RegisterPage() {
                 helperText={errors.fullName}
               />
               <TextField
+                type='password'
+                label='Senha'
+                placeholder=''
+                {...getFieldProps('password')}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+              <TextField
+                type='password'
+                label='Confirmar Senha'
+                placeholder=''
+                {...getFieldProps('confirmPassword')}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword}
+              />
+              {/* <TextField
                 type='date'
                 label='Data de Nascimento'
                 placeholder={new Date().toLocaleDateString()}
                 {...getFieldProps('dateOfBirth')}
                 error={!!errors.dateOfBirth}
                 helperText={errors.dateOfBirth}
-              />
+              /> */}
               <CustomButton
                 loading={isSubmitting}
                 type="submit"

@@ -13,7 +13,7 @@ interface TextFieldProps extends ComponentPropsWithoutRef<"input"> {
   error?: boolean;
 }
 
-export const TextField = forwardRef<ElementRef<"input" | "textarea">, TextFieldProps>(
+export const TextField = forwardRef<ElementRef<"input" | "textarea" | any>, TextFieldProps>(
   ({
     value = "",
     name,
@@ -53,9 +53,11 @@ export const TextField = forwardRef<ElementRef<"input" | "textarea">, TextFieldP
         >
           {label}
         </label>
-        {type === 'textarea' ? (
+        {type === 'textarea' && (
           <textarea ref={ref as Ref<HTMLTextAreaElement>} {...values as TextareaHTMLAttributes<HTMLTextAreaElement>} />
-        ) : (
+        )
+        }
+        {(
           <input ref={ref as Ref<HTMLInputElement>} type={type} {...values as InputHTMLAttributes<HTMLInputElement>} />
         )}
         {helperText && (
